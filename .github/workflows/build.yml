@@ -46,9 +46,9 @@ jobs:
         run: |
           VARIANT_FHEM="${{ steps.subversion.outputs.FHEM_VERSION }}-s${{ steps.subversion.outputs.FHEM_REVISION_LATEST }}"
           VARIANT_IMAGE="${{ steps.subversion.outputs.IMAGE_VERSION }}${{ steps.myref.outputs.BRANCH }}"
-          echo '::set-output name=VARIANT::"${VARIANT_FHEM}_${VARIANT_IMAGE}"
-          echo '::set-output name=VARIANT_IMAGE::"$VARIANT_IMAGE"
-          echo '::set-output name=VARIANT_FHEM::"$VARIANT_FHEM"
+          echo '::set-output name=VARIANT::"${VARIANT_FHEM}_${VARIANT_IMAGE}"'
+          echo '::set-output name=VARIANT_IMAGE::"$VARIANT_IMAGE"'
+          echo '::set-output name=VARIANT_FHEM::"$VARIANT_FHEM"'
 
       - name: Check variables
         run: |
