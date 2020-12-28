@@ -1,4 +1,4 @@
-ARG ARCH="amd64"
+ARG ARCH=${BUILDARCH}
 ARG BASE_IMAGE="debian"
 ARG BASE_IMAGE_TAG="buster"
 
