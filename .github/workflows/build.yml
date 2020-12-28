@@ -51,6 +51,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,
           push: false
+          cache-from: type=registry,ref=fhem/fhem:latest
+          cache-to: type=inline
           tags: |
-            user/app:latest
-            user/app:1.0.0
+            fhem/fhem:dev
