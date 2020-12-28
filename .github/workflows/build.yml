@@ -36,7 +36,7 @@ jobs:
         id: subversion
         run: |
           svn co https://svn.fhem.de/fhem/trunk ./src/fhem/trunk >/dev/null;
-          svn info | grep "Revision" | awk '{print $2}'
+          cd ./src/fhem/trunk && svn info | grep "Revision" | awk '{print $2}'
           echo "::set-output name=FHEM_REVISION_LATEST::$( cd ./src/fhem/trunk; svn info --show-item last-changed-revision)"
           echo "::set-output name=FHEM_VERSION::$( svn ls "^/tags" https://svn.fhem.de/fhem/ | grep "FHEM_" | sort | tail -n 1 | cut -d / -f 1 | cut -d " " -f 1 |cut -d _ -f 2- | sed s/_/./g )"
           echo '::set-output name=IMAGE_VERSION::$( git describe --tags --dirty --match "v[0-9]*")'
