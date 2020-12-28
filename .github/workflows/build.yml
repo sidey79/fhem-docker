@@ -92,7 +92,7 @@ jobs:
             PLATFORM=linux
             BUILD_DATE=${{ steps.subversion.outputs.BUILD_DATE }}
             TAG=${{ steps.vars.outputs.VARIANT }}
-            TAG_ROLLING=${{ github.head_ref }
+            TAG_ROLLING=${{ github.head_ref }}
             IMAGE_VERSION=${{ steps.vars.outputs.VARIANT }}
             IMAGE_VCS_REF=${{ github.sha }}
             FHEM_VERSION=${{ steps.vars.outputs.VARIANT_FHEM }}
