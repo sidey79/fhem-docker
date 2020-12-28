@@ -25,16 +25,41 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v2
 
-      - name: Checkout fhem-mirror
-        uses: actions/checkout@v2
-        with:
-          repository: 'fhem/fhem-mirror'
-          path: src/fhem/trunk
+      - name: Get the current branch name
+        shell: bash
+        run: echo "::set-output name=BRANCH::-${ GITHUB_REF#refs/heads/ }"
+        id: myref
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - name: Checkout fhem svn
+        id: subversion
+        run: |
+          svn co https://svn.fhem.de/fhem/trunk ./src/fhem/trunk >/dev/null;
+          svn info | grep "Revision" | awk '{print $2}'
+          echo "::set-output name=FHEM_REVISION_LATEST::$( cd ./src/fhem/trunk; svn info --show-item last-changed-revision)"
+          echo "::set-output name=FHEM_VERSION::$( svn ls "^/tags" https://svn.fhem.de/fhem/ | grep "FHEM_" | sort | tail -n 1 | cut -d / -f 1 | cut -d " " -f 1 |cut -d _ -f 2- | sed s/_/./g )"
+          echo '::set-output name=IMAGE_VERSION::$( git describe --tags --dirty --match "v[0-9]*")'
+          echo '::set-output name=BUILD_DATE::$(  date --iso-8601=seconds --utc )
 
+      - name: prepare some vars
+        id: vars
+        run: |
+          VARIANT_FHEM="${{ steps.subversion.outputs.FHEM_VERSION }}-s${{ steps.subversion.outputs.FHEM_REVISION_LATEST }}"
+          VARIANT_IMAGE="${{ steps.subversion.outputs.IMAGE_VERSION }}${{ steps.myref.outputs.BRANCH }}"
+          echo '::set-output name=VARIANT::"${VARIANT_FHEM}_${VARIANT_IMAGE}"
+          echo '::set-output name=VARIANT_IMAGE::"$VARIANT_IMAGE"
+          echo '::set-output name=VARIANT_FHEM::"$VARIANT_FHEM"
+
+      - name: Check variables
+        run: |
+          echo Revision: ${{ steps.subversion.outputs.FHEM_REVISION_LATEST }}
+          echo Version: ${{ steps.subversion.outputs.FHEM_VERSION }}
+          echo Image Version: ${{ steps.subversion.outputs.IMAGE_VERSION }}
+          echo Build date: ${{ steps.subversion.outputs.BUILD_DATE }}
+          echo Branch: ${{ steps.myref.outputs.BRANCH }}
+          echo VARIANT: ${{ steps.vars.outputs.VARIANT }}
+          echo VARIANT_IMAGE: ${{ steps.vars.outputs.VARIANT_IMAGE }}
+          echo VARIANT_FHEM: ${{ steps.vars.outputs.VARIANT_FHEM }}
+          
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1.0.1
         with:
@@ -56,11 +81,22 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          load: true  
+          load: false  
           file: ./Dockerfile
           platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,
           push: false
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: |
-            fhem/fhem:dev
+            fhem:${{ steps.vars.outputs.VARIANT }}
+          build-args: |
+            PLATFORM=linux
+            BUILD_DATE=${{ steps.subversion.outputs.BUILD_DATE }}
+            TAG=${{ steps.vars.outputs.VARIANT }}
+            TAG_ROLLING=${{ github.head_ref }
+            IMAGE_VERSION=${{ steps.vars.outputs.VARIANT }}
+            IMAGE_VCS_REF=${{ github.sha }}
+            FHEM_VERSION=${{ steps.vars.outputs.VARIANT_FHEM }}
+            VCS_REF=${{ steps.subversion.outputs.FHEM_REVISION_LATEST }}
+
+
