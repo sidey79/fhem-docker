@@ -87,8 +87,7 @@ jobs:
           push: false
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-          tags: |
-            fhem:${{ steps.vars.outputs.VARIANT }}
+          tags: fhem:${{ steps.vars.outputs.VARIANT }}
           build-args: |
             PLATFORM=linux
             BUILD_DATE=${{ steps.subversion.outputs.BUILD_DATE }}
