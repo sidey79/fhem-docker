@@ -1,7 +1,7 @@
 ARG ARCH="amd64"
 ARG BASE_IMAGE="debian"
 ARG BASE_IMAGE_TAG="buster"
-FROM ${ARCH}debian:${BASE_IMAGE_TAG}
+FROM ${ARCH}/${BASE_IMAGE}:${BASE_IMAGE_TAG}
 
 # Arguments to instantiate as variables
 ARG BASE_IMAGE
