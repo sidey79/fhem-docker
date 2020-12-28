@@ -76,9 +76,9 @@ jobs:
         run: |
           echo FHEM_REVISION_LATEST: ${{ steps.svnVars.outputs.FHEM_REVISION_LATEST }}
           echo FHEM_VERSION: ${{ steps.svnVars.outputs.FHEM_VERSION }}
-          echo IMAGE_VERSION: ${{ steps.svnVars.outputs.IMAGE_VERSION }}
-          echo BUILD_DATE: ${{ steps.gitVars.outputs.BUILD_DATE }}
-          echo BRANCH: ${{ steps.myref.outputs.BRANCH }}
+          echo IMAGE_VERSION: ${{ steps.gitVars.outputs.IMAGE_VERSION }}
+          echo BUILD_DATE: ${{ steps.buildVars.outputs.BUILD_DATE }}
+          echo BRANCH: ${{ steps.gitVars.outputs.BRANCH }}
           echo VARIANT: ${{ steps.buildVars.outputs.VARIANT }}
           echo VARIANT_IMAGE: ${{ steps.buildVars.outputs.VARIANT_IMAGE }}
           echo VARIANT_FHEM: ${{ steps.buildVars.outputs.VARIANT_FHEM }}
