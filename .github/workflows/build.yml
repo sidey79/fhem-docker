@@ -122,11 +122,11 @@ jobs:
             IMAGE_VCS_REF=${{ github.sha }}
             FHEM_VERSION=${{ steps.buildVars.outputs.VARIANT_FHEM }}
             VCS_REF=${{ steps.svnVars.outputs.FHEM_REVISION_LATEST }}
-            IMAGE_LAYER_SYS_EXT=1
+            IMAGE_LAYER_SYS_EXT=0
             IMAGE_LAYER_PERL_EXT=1
             IMAGE_LAYER_DEV=0
             IMAGE_LAYER_PERL_CPAN=1
-            IMAGE_LAYER_PERL_CPAN_EXT=1
+            IMAGE_LAYER_PERL_CPAN_EXT=0
             IMAGE_LAYER_PYTHON=0
             IMAGE_LAYER_PYTHON_EXT=0
             IMAGE_LAYER_NODEJS=0
