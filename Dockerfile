@@ -3,15 +3,9 @@ ARG BASE_IMAGE_TAG="buster"
 FROM --platform=$TARGETPLATFORM ${BASE_IMAGE}:${BASE_IMAGE_TAG}
 
 ARG TARGETPLATFORM
-ARG BUILDARCH
-ARG TARGETARCH
 
-ARG ARCH=${TARGETARCH}
+ARG ARCH=${TARGETPLATFORM}
 
-RUN echo ARCH: ${ARCH}
-RUN echo BUILDARCH: ${BUILDARCH}
-RUN echo $TARGETPLATFORM: {TARGETPLATFORM}
-RUN echo TARGETARCH: ${TARGETARCH}
 
 
 # Arguments to instantiate as variables
@@ -408,7 +402,7 @@ RUN if [ "${PIP_PKGS}" != "" ] || [ "${IMAGE_LAYER_PYTHON}" != "0" ] || [ "${IMA
     ; fi
 
 # Add nodejs app layer
-RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${IMAGE_LAYER_NODEJS_EXT}" != "0" ] ) && [ "${ARCH}" != "arm32v5" ]; then \
+RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${IMAGE_LAYER_NODEJS_EXT}" != "0" ] ) && ( [ "${ARCH}" != "arm32v5" ] && [ ${TARGETPLATFORM} != 'linux/arm/v6' ] ); then \
       LC_ALL=C curl --retry 3 --retry-connrefused --retry-delay 2 -fsSL https://deb.nodesource.com/setup_14.x | LC_ALL=C bash - \
       && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -qqy --no-install-recommends \
            nodejs \
