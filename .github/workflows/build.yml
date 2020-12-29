@@ -34,12 +34,18 @@ jobs:
           echo "::set-output name=IMAGE_VERSION::$( git describe --tags --dirty --match "v[0-9]*")"
         id: gitVars
 
+     - name: Get latest svn revision from remote
+       id: svnRemote
+       run: echo "::set-output name=LAST_SVN_REVISION::$(svn info --show-item revision)"
+
       - name: Cache fhem 
         id: cache-fhem
         uses: actions/cache@v2
         with:
           path: ./src/fhem/trunk
-          key: ${{ runner.os }}-fhemsvn
+          key: ${{ runner.os }}-fhemsvn-${{ steps.svnRemote.LAST_SVN_REVISION }}
+        restore-keys: |
+            ${{ runner.os }}-fhemsvn-
 
       - name: Checkout fhem from svn
         if: steps.cache-fhem.outputs.cache-hit != 'true'
