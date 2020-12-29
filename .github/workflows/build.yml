@@ -36,7 +36,7 @@ jobs:
 
       - name: Get latest svn revision from remote
         id: svnRemote
-        run: echo "::set-output name=LAST_SVN_REVISION::$(svn info --show-item revision)"
+        run: echo "::set-output name=LAST_SVN_REVISION::$(svn info --show-item revision https://svn.fhem.de/fhem/trunk)"
 
       - name: Cache fhem 
         id: cache-fhem
