@@ -1,8 +1,11 @@
-ARG ARCH=${BUILDARCH}
 ARG BASE_IMAGE="debian"
 ARG BASE_IMAGE_TAG="buster"
-
 FROM --platform=$TARGETPLATFORM ${BASE_IMAGE}:${BASE_IMAGE_TAG}
+
+ARG ARCH=${BUILDARCH}
+
+RUN echo $ARCH
+RUN echo $BUILDARCH
 
 # Arguments to instantiate as variables
 ARG BASE_IMAGE
