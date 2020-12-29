@@ -402,8 +402,8 @@ RUN if [ "${PIP_PKGS}" != "" ] || [ "${IMAGE_LAYER_PYTHON}" != "0" ] || [ "${IMA
     ; fi
 
 # Add nodejs app layer
-RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${IMAGE_LAYER_NODEJS_EXT}" != "0" ] ) && ( [ "${ARCH}" == "AMD64" ] || [ "${ARCH}" == "ARMv7" ] || [ "${ARCH}" == "ARM64v8" ] ] ||  \
-         [ ${TARGETPLATFORM} == 'linux/amd64' ] || ${TARGETPLATFORM} == 'linux/arm/v7' ] || ${TARGETPLATFORM} == 'linux/arm64' ] || ); then \
+RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${IMAGE_LAYER_NODEJS_EXT}" != "0" ] ) && ( [ "${ARCH}" == "AMD64" ] || [ "${ARCH}" == "ARMv7" ] || [ "${ARCH}" == "ARM64v8" ]  ||  \
+         [ ${TARGETPLATFORM} == 'linux/amd64' ] || [ ${TARGETPLATFORM} == 'linux/arm/v7' ] || [ ${TARGETPLATFORM} == 'linux/arm64' ] ) ; then \
       LC_ALL=C curl --retry 3 --retry-connrefused --retry-delay 2 -fsSL https://deb.nodesource.com/setup_14.x | LC_ALL=C bash - \
       && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -qqy --no-install-recommends \
            nodejs \
