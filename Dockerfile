@@ -38,7 +38,7 @@ ARG NPM_PKGS=""
 
 # Re-usable variables during build
 ARG L_AUTHORS="Julian Pawlowski (Forum.fhem.de:@loredo, Twitter:@loredo)"
-ARG L_URL="https://hub.docker.com/r/fhem/fhem-${TARGETARCH}_${PLATFORM}"
+ARG L_URL="https://hub.docker.com/r/fhem/fhem-${TARGETPLATFORM}"
 ARG L_USAGE="https://github.com/fhem/fhem-docker/blob/${IMAGE_VCS_REF}/README.md"
 ARG L_VCS_URL="https://github.com/fhem/fhem-docker/"
 ARG L_VENDOR="Julian Pawlowski"
@@ -429,7 +429,7 @@ RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${I
     ; fi
 
 # Add FHEM app layer
-# Note: Manual checkout is required if build is not run by Travis:
+# Note: Manual checkout is required if build is not run by Github Actions workflow:
 #   svn co https://svn.fhem.de/fhem/trunk ./src/fhem/trunk
 COPY src/fhem/trunk/fhem/ /fhem/
 
