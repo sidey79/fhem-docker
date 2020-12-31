@@ -152,7 +152,6 @@ jobs:
           docker exec ${CONTAINER} /bin/bash -c 'prove /opt/fhem/t/FHEM/*'
 
       - name: Login to GitHub Container Registry
-        if: ${{ secrets.CR_PAT }}
         uses: docker/login-action@v1 
         with:
           registry: ghcr.io
@@ -160,7 +159,6 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Build and push cross compiled full blown image on supported platforms
-        if: ${{ secrets.CR_PAT }}
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -194,7 +192,6 @@ jobs:
             L_DESCR="A full blown Docker image for FHEM house automation system, based on Debian Buster."
 
       - name: Build and push cross compiled base image on supported platforms
-        if: ${{ secrets.CR_PAT }}
         uses: docker/build-push-action@v2
         with:
           context: .
