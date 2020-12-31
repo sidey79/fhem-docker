@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Build and Test
 
 # Controls when the action will run. 
 on:
@@ -149,7 +149,7 @@ jobs:
         run: |
           CONTAINER=$( docker run -d -ti --health-interval=60s --health-timeout=10s --health-start-period=150s --health-retries=5 -e CPAN_PKGS=Test2::Suite fhem:${{ steps.buildVars.outputs.VARIANT }} ) 
           sleep 5;
-          docker exec ${CONTAINER} /bin/bash -c 'prove /opt/fhem/t/FHEM/*'
+          docker exec ${CONTAINER} /bin/bash -c 'prove /opt/fhem/t/FHEM/'
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1 
