@@ -43,7 +43,7 @@ ARG L_USAGE="https://github.com/fhem/fhem-docker/blob/${IMAGE_VCS_REF}/README.md
 ARG L_VCS_URL="https://github.com/fhem/fhem-docker/"
 ARG L_VENDOR="Julian Pawlowski"
 ARG L_LICENSES="MIT"
-ARG L_TITLE="fhem-${ARCH}_${PLATFORM}"
+ARG L_TITLE="fhem-${TARGETPLATFORM}"
 ARG L_DESCR="A basic Docker image for FHEM house automation system, based on Debian Buster."
 
 ARG L_AUTHORS_FHEM="https://fhem.de/MAINTAINER.txt"
