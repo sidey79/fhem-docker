@@ -105,7 +105,7 @@ ENV LANG=en_US.UTF-8 \
    TIMEOUT=10 \
    CONFIGTYPE=fhem.cfg
 
-# Install base environment
+# Install base environment, cache is invalidated here, because we set a BUILD_DATE Variable which changes every run.
 COPY ./src/qemu-* /usr/bin/
 COPY src/entry.sh /entry.sh
 COPY src/ssh_known_hosts.txt /ssh_known_hosts.txt
