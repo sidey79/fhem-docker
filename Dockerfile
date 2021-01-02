@@ -404,7 +404,7 @@ RUN if [ "${IMAGE_LAYER_DEV}" != "0" ] || [ "${IMAGE_LAYER_PERL_CPAN}" != "0" ] 
         libavahi-compat-libdnssd-dev=0.7-4+b1 \
         libdb-dev=5.3.1+nmu1 \
         libsodium-dev=1.0.17-1 \
-        libssl-dev4=1.1.1d-0+deb10u4 \
+        libssl-dev=1.1.1d-0+deb10u4 \
         libtool=2.4.6-9 \
         libusb-1.0-0-dev=2:1.0.22-2 \
         patch=2.7.6-3+deb10u1 \
