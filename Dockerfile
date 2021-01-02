@@ -4,63 +4,6 @@ FROM --platform=$TARGETPLATFORM ${BASE_IMAGE}:${BASE_IMAGE_TAG}
 
 ARG TARGETPLATFORM
 
-# Arguments to instantiate as variables
-ARG PLATFORM="linux"
-ARG TAG=""
-ARG TAG_ROLLING=""
-ARG IMAGE_VCS_REF=""
-ARG VCS_REF=""
-ARG FHEM_VERSION=""
-ARG IMAGE_VERSION=""
-
-# Custom build options:
-#  Disable certain image layers using build env variables if desired
-ARG IMAGE_LAYER_SYS_EXT="1"
-ARG IMAGE_LAYER_PERL_EXT="1"
-ARG IMAGE_LAYER_DEV="1"
-ARG IMAGE_LAYER_PERL_CPAN="1"
-ARG IMAGE_LAYER_PERL_CPAN_EXT="1"
-ARG IMAGE_LAYER_PYTHON="1"
-ARG IMAGE_LAYER_PYTHON_EXT="1"
-ARG IMAGE_LAYER_NODEJS="1"
-ARG IMAGE_LAYER_NODEJS_EXT="1"
-
-# Custom installation packages
-ARG APT_PKGS=""
-ARG CPAN_PKGS=""
-ARG PIP_PKGS=""
-ARG NPM_PKGS=""
-
-# Re-usable variables during build
-ARG L_AUTHORS="Julian Pawlowski (Forum.fhem.de:@loredo, Twitter:@loredo)"
-ARG L_URL="https://hub.docker.com/r/fhem/fhem-${TARGETPLATFORM}"
-ARG L_USAGE="https://github.com/fhem/fhem-docker/blob/${IMAGE_VCS_REF}/README.md"
-ARG L_VCS_URL="https://github.com/fhem/fhem-docker/"
-ARG L_VENDOR="Julian Pawlowski"
-ARG L_LICENSES="MIT"
-ARG L_TITLE="fhem-${TARGETPLATFORM}"
-ARG L_DESCR="A basic Docker image for FHEM house automation system, based on Debian Buster."
-
-ARG L_AUTHORS_FHEM="https://fhem.de/MAINTAINER.txt"
-ARG L_URL_FHEM="https://fhem.de/"
-ARG L_USAGE_FHEM="https://fhem.de/#Documentation"
-ARG L_VCS_URL_FHEM="https://svn.fhem.de/"
-ARG L_VENDOR_FHEM="FHEM e.V."
-ARG L_LICENSES_FHEM="GPL-2.0"
-ARG L_DESCR_FHEM="FHEM (TM) is a GPL'd perl server for house automation. It is used to automate some common tasks in the household like switching lamps / shutters / heating / etc. and to log events like temperature / humidity / power consumption."
-
-
-# non-standard labels
-LABEL org.fhem.authors=${L_AUTHORS_FHEM} \
-   org.fhem.url=${L_URL_FHEM} \
-   org.fhem.documentation=${L_USAGE_FHEM} \
-   org.fhem.source=${L_VCS_URL_FHEM} \
-   org.fhem.version=${FHEM_VERSION} \
-   org.fhem.revision=${VCS_REF} \
-   org.fhem.vendor=${L_VENDOR_FHEM} \
-   org.fhem.licenses=${L_LICENSES_FHEM} \
-   org.fhem.description=${L_DESCR_FHEM}
-
 ENV LANG=en_US.UTF-8 \
    LANGUAGE=en_US:en \
    LC_ADDRESS=de_DE.UTF-8 \
@@ -92,6 +35,10 @@ COPY ./src/qemu-* /usr/bin/
 COPY src/entry.sh src/health-check.sh src/ssh_known_hosts.txt /
 COPY src/find-* /usr/local/bin/
 COPY src/99_DockerImageInfo.pm /fhem/FHEM/
+
+# Custom installation packages
+ARG APT_PKGS=""
+
 RUN chmod 755 /*.sh /usr/local/bin/* \
     && sed -i "s/buster main/buster main contrib non-free/g" /etc/apt/sources.list \
     && sed -i "s/buster-updates main/buster-updates main contrib non-free/g" /etc/apt/sources.list \
@@ -146,6 +93,9 @@ RUN chmod 755 /*.sh /usr/local/bin/* \
         ${APT_PKGS} \
     && LC_ALL=C apt-get autoremove -qqy && LC_ALL=C apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/*
+
+# Custom image layers options:
+ARG IMAGE_LAYER_SYS_EXT="1"
 
 # Add extended system layer
 RUN if [ "${IMAGE_LAYER_SYS_EXT}" != "0" ]; then \
@@ -228,6 +178,9 @@ RUN LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get update \
         perl-base=5.28.1-6+deb10u1 \
     && LC_ALL=C apt-get autoremove -qqy && LC_ALL=C apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/*
+
+# Custom image layers options:
+ARG IMAGE_LAYER_PERL_EXT="1"
 
 # Add Perl extended app layer for pre-compiled packages
 RUN if [ "${IMAGE_LAYER_PERL_EXT}" != "0" ]; then \
@@ -394,6 +347,9 @@ RUN if [ "${IMAGE_LAYER_PERL_EXT}" != "0" ]; then \
       && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/* \
     ; fi
 
+# Custom image layers options:
+ARG IMAGE_LAYER_DEV="1"
+
 # Add development/compilation layer
 RUN if [ "${IMAGE_LAYER_DEV}" != "0" ] || [ "${IMAGE_LAYER_PERL_CPAN}" != "0" ] || [ "${IMAGE_LAYER_PERL_CPAN_EXT}" != "0" ] || [ "${IMAGE_LAYER_PYTHON}" != "0" ] || [ "${IMAGE_LAYER_PYTHON_EXT}" != "0" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${IMAGE_LAYER_NODEJS_EXT}" != "0" ]; then \
       LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -412,6 +368,14 @@ RUN if [ "${IMAGE_LAYER_DEV}" != "0" ] || [ "${IMAGE_LAYER_PERL_CPAN}" != "0" ] 
       && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/* \
     ; fi
 
+
+# Custom image layers options:
+ARG IMAGE_LAYER_PERL_CPAN="1"
+ARG IMAGE_LAYER_PERL_CPAN_EXT="1"
+
+# Custom installation packages
+ARG CPAN_PKGS=""
+
 # Add Perl app layer for self-compiled modules
 #  * exclude any ARM platforms due to long build time
 #  * manually pre-compiled ARM packages may be applied here
@@ -426,7 +390,7 @@ RUN if [ "${CPAN_PKGS}" != "" ] || [ "${PIP_PKGS}" != "" ] || [ "${IMAGE_LAYER_P
            ${CPAN_PKGS} \
          ; fi \
       && if [ "${IMAGE_LAYER_PERL_CPAN_EXT}" != "0" ]; then \
-           if [ "${ARCH}" = "amd64" ] || [ "${ARCH}" = "i386" ]; then \
+           if [ "${TARGETPLATFORM}" = "linux/amd64" ] || [ "${TARGETPLATFORM}" = "linux/i386" ]; then \
              cpanm --notest \
               Alien::Base::ModuleBuild \
               Alien::Sodium \
@@ -442,6 +406,13 @@ RUN if [ "${CPAN_PKGS}" != "" ] || [ "${PIP_PKGS}" != "" ] || [ "${IMAGE_LAYER_P
       && LC_ALL=C apt-get autoremove -qqy && LC_ALL=C apt-get clean \
       && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/* \
     ; fi
+
+# Custom image layers options:
+ARG IMAGE_LAYER_PYTHON="1"
+ARG IMAGE_LAYER_PYTHON_EXT="1"
+
+# Custom installation packages
+ARG PIP_PKGS=""
 
 # Add Python app layer
 RUN if [ "${PIP_PKGS}" != "" ] || [ "${IMAGE_LAYER_PYTHON}" != "0" ] || [ "${IMAGE_LAYER_PYTHON_EXT}" != "0" ]; then \
@@ -467,6 +438,13 @@ RUN if [ "${PIP_PKGS}" != "" ] || [ "${IMAGE_LAYER_PYTHON}" != "0" ] || [ "${IMA
       && LC_ALL=C apt-get autoremove -qqy && LC_ALL=C apt-get clean \
       && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/* \
     ; fi
+
+# Custom installation packages
+ARG NPM_PKGS=""
+
+# Custom image layers options:
+ARG IMAGE_LAYER_NODEJS="1"
+ARG IMAGE_LAYER_NODEJS_EXT="1"
 
 # Add nodejs app layer
 RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${IMAGE_LAYER_NODEJS_EXT}" != "0" ] ) ; then \
@@ -501,8 +479,47 @@ RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${I
 #   svn co https://svn.fhem.de/fhem/trunk ./src/fhem/trunk
 COPY src/fhem/trunk/fhem/ /fhem/
 
-# Moved Build Date to the end, because it changes every run and invalidates the cache for all following steps  https://github.com/moby/moby/issues/20136
+# Moved AGS to the end, because it changes every run and invalidates the cache for all following steps  https://github.com/moby/moby/issues/20136
+# Arguments to instantiate as variables
+ARG PLATFORM="linux"
+ARG TAG=""
+ARG TAG_ROLLING=""
+ARG IMAGE_VCS_REF=""
+ARG VCS_REF=""
+ARG FHEM_VERSION=""
+ARG IMAGE_VERSION=""
 ARG BUILD_DATE=""
+
+# Re-usable variables during build
+ARG L_AUTHORS="Julian Pawlowski (Forum.fhem.de:@loredo, Twitter:@loredo)"
+ARG L_URL="https://hub.docker.com/r/fhem/fhem-${TARGETPLATFORM}"
+ARG L_USAGE="https://github.com/fhem/fhem-docker/blob/${IMAGE_VCS_REF}/README.md"
+ARG L_VCS_URL="https://github.com/fhem/fhem-docker/"
+ARG L_VENDOR="Julian Pawlowski"
+ARG L_LICENSES="MIT"
+ARG L_TITLE="fhem-${TARGETPLATFORM}"
+ARG L_DESCR="A basic Docker image for FHEM house automation system, based on Debian Buster."
+
+ARG L_AUTHORS_FHEM="https://fhem.de/MAINTAINER.txt"
+ARG L_URL_FHEM="https://fhem.de/"
+ARG L_USAGE_FHEM="https://fhem.de/#Documentation"
+ARG L_VCS_URL_FHEM="https://svn.fhem.de/"
+ARG L_VENDOR_FHEM="FHEM e.V."
+ARG L_LICENSES_FHEM="GPL-2.0"
+ARG L_DESCR_FHEM="FHEM (TM) is a GPL'd perl server for house automation. It is used to automate some common tasks in the household like switching lamps / shutters / heating / etc. and to log events like temperature / humidity / power consumption."
+
+
+# non-standard labels
+LABEL org.fhem.authors=${L_AUTHORS_FHEM} \
+   org.fhem.url=${L_URL_FHEM} \
+   org.fhem.documentation=${L_USAGE_FHEM} \
+   org.fhem.source=${L_VCS_URL_FHEM} \
+   org.fhem.version=${FHEM_VERSION} \
+   org.fhem.revision=${VCS_REF} \
+   org.fhem.vendor=${L_VENDOR_FHEM} \
+   org.fhem.licenses=${L_LICENSES_FHEM} \
+   org.fhem.description=${L_DESCR_FHEM}
+
 # annotation labels according to
 # https://github.com/opencontainers/image-spec/blob/v1.0.1/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.created=${BUILD_DATE} \
@@ -516,6 +533,7 @@ LABEL org.opencontainers.image.created=${BUILD_DATE} \
    org.opencontainers.image.licenses=${L_LICENSES} \
    org.opencontainers.image.title=${L_TITLE} \
    org.opencontainers.image.description=${L_DESCR}
+
 RUN echo "org.opencontainers.image.created=${BUILD_DATE}\norg.opencontainers.image.authors=${L_AUTHORS}\norg.opencontainers.image.url=${L_URL}\norg.opencontainers.image.documentation=${L_USAGE}\norg.opencontainers.image.source=${L_VCS_URL}\norg.opencontainers.image.version=${IMAGE_VERSION}\norg.opencontainers.image.revision=${IMAGE_VCS_REF}\norg.opencontainers.image.vendor=${L_VENDOR}\norg.opencontainers.image.licenses=${L_LICENSES}\norg.opencontainers.image.title=${L_TITLE}\norg.opencontainers.image.description=${L_DESCR}\norg.fhem.authors=${L_AUTHORS_FHEM}\norg.fhem.url=${L_URL_FHEM}\norg.fhem.documentation=${L_USAGE_FHEM}\norg.fhem.source=${L_VCS_URL_FHEM}\norg.fhem.version=${FHEM_VERSION}\norg.fhem.revision=${VCS_REF}\norg.fhem.vendor=${L_VENDOR_FHEM}\norg.fhem.licenses=${L_LICENSES_FHEM}\norg.fhem.description=${L_DESCR_FHEM}" > /image_info \
 
 VOLUME [ "/opt/fhem" ]
