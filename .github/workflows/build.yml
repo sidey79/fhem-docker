@@ -167,6 +167,8 @@ jobs:
         shell: bash
         run: |
           echo "::set-output name=IMAGE_VERSION::$( git describe --tags --dirty --match "v[0-9]*")"
+          echo "::set-output name=BRANCH::$(echo "${GITHUB_REF#refs/*/}")"
+
         id: gitVars
 
       - name: Get latest svn revision from remote
