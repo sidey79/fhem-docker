@@ -472,10 +472,10 @@ RUN if [ "${PIP_PKGS}" != "" ] || [ "${IMAGE_LAYER_PYTHON}" != "0" ] || [ "${IMA
 RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${IMAGE_LAYER_NODEJS_EXT}" != "0" ] ) ; then \
       LC_ALL=C curl --retry 3 --retry-connrefused --retry-delay 2 -fsSL https://deb.nodesource.com/setup_14.x | LC_ALL=C bash - \
       && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -qqy --no-install-recommends \
-           nodejs:10.21.0~dfsg-1~deb10u1 \
+           nodejs=10.21.0* \
       && if [ ! -e /usr/bin/npm ]; then \
            LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -qqy --no-install-recommends \
-             npm=5.8.0+ds6-4+deb10u2 \
+             npm=5.8.* \
       ; fi \
       && npm install -g --unsafe-perm --production \
           npm \
