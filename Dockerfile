@@ -1,5 +1,5 @@
 ARG BASE_IMAGE="debian"
-ARG BASE_IMAGE_TAG="buster"
+ARG BASE_IMAGE_TAG="10.7-slim"
 FROM --platform=$TARGETPLATFORM ${BASE_IMAGE}:${BASE_IMAGE_TAG}
 
 ARG TARGETPLATFORM
@@ -34,7 +34,6 @@ ENV LANG=en_US.UTF-8 \
 COPY ./src/qemu-* /usr/bin/
 COPY src/entry.sh src/health-check.sh src/ssh_known_hosts.txt /
 COPY src/find-* /usr/local/bin/
-COPY src/99_DockerImageInfo.pm /fhem/FHEM/
 
 # Custom installation packages
 ARG APT_PKGS=""
@@ -94,33 +93,6 @@ RUN chmod 755 /*.sh /usr/local/bin/* \
     && LC_ALL=C apt-get autoremove -qqy && LC_ALL=C apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/*
 
-# Custom image layers options:
-ARG IMAGE_LAYER_SYS_EXT="1"
-
-# Add extended system layer
-RUN if [ "${IMAGE_LAYER_SYS_EXT}" != "0" ]; then \
-      LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get update \
-      && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -qqy --no-install-recommends \
-        alsa-utils=1.1.8-2 \
-        dfu-programmer=0.6.1-1+b1 \
-        espeak=1.48.04+dfsg-7+deb10u1 \
-        ffmpeg=7:4.1.6-1~deb10u1 \
-        lame=3.100-2+b1 \
-        libnmap-parser-perl=1.37-1 \
-        libttspico-utils=1.0+git20130326-9 \
-        mp3wrap=0.5-4 \
-        mpg123=1.25.10-2 \
-        mplayer=2:1.3.0-8+b4 \
-        nmap=7.70+dfsg1-6+deb10u1 \
-        normalize-audio=0.7.7-15 \
-        snmp=5.7.3+dfsg-5+deb10u1 \
-        snmp-mibs-downloader=1.2 \
-        sox=14.4.2+git20190427-1 \
-        vorbis-tools=1.4.0-11 \
-      && LC_ALL=C apt-get autoremove -qqy && LC_ALL=C apt-get clean \
-      && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/* \
-    ; fi
-
 # Add Perl basic app layer for pre-compiled packages
 RUN LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get update \
     && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -qqy --no-install-recommends \
@@ -178,6 +150,34 @@ RUN LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get update \
         perl-base=5.28.1-6+deb10u1 \
     && LC_ALL=C apt-get autoremove -qqy && LC_ALL=C apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/*
+
+# Custom image layers options:
+ARG IMAGE_LAYER_SYS_EXT="1"
+
+# Add extended system layer
+RUN if [ "${IMAGE_LAYER_SYS_EXT}" != "0" ]; then \
+      LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get update \
+      && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -qqy --no-install-recommends \
+        alsa-utils=1.1.8-2 \
+        dfu-programmer=0.6.1-1+b1 \
+        espeak=1.48.04+dfsg-7+deb10u1 \
+        ffmpeg=7:4.1.6-1~deb10u1 \
+        lame=3.100-2+b1 \
+        libnmap-parser-perl=1.37-1 \
+        libttspico-utils=1.0+git20130326-9 \
+        mp3wrap=0.5-4 \
+        mpg123=1.25.10-2 \
+        mplayer=2:1.3.0-8+b4 \
+        nmap=7.70+dfsg1-6+deb10u1 \
+        normalize-audio=0.7.7-15 \
+        snmp=5.7.3+dfsg-5+deb10u1 \
+        snmp-mibs-downloader=1.2 \
+        sox=14.4.2+git20190427-1 \
+        vorbis-tools=1.4.0-11 \
+      && LC_ALL=C apt-get autoremove -qqy && LC_ALL=C apt-get clean \
+      && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/* \
+    ; fi
+
 
 # Custom image layers options:
 ARG IMAGE_LAYER_PERL_EXT="1"
@@ -450,7 +450,7 @@ ARG IMAGE_LAYER_NODEJS_EXT="1"
 RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${IMAGE_LAYER_NODEJS_EXT}" != "0" ] ) ; then \
       LC_ALL=C curl --retry 3 --retry-connrefused --retry-delay 2 -fsSL https://deb.nodesource.com/setup_14.x | LC_ALL=C bash - \
       && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -qqy --no-install-recommends \
-           nodejs=10.21.0* \
+          nodejs=14.* \
       && if [ ! -e /usr/bin/npm ]; then \
            LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -qqy --no-install-recommends \
              npm=5.8.* \
@@ -477,7 +477,8 @@ RUN if ( [ "${NPM_PKGS}" != "" ] || [ "${IMAGE_LAYER_NODEJS}" != "0" ] || [ "${I
 # Add FHEM app layer
 # Note: Manual checkout is required if build is not run by Github Actions workflow:
 #   svn co https://svn.fhem.de/fhem/trunk ./src/fhem/trunk
-COPY src/fhem/trunk/fhem/ /fhem/
+
+COPY src/99_DockerImageInfo.pm src/fhem/trunk/fhem/ /fhem/
 
 # Moved AGS to the end, because it changes every run and invalidates the cache for all following steps  https://github.com/moby/moby/issues/20136
 # Arguments to instantiate as variables
