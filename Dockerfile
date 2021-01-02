@@ -401,12 +401,12 @@ RUN if [ "${IMAGE_LAYER_DEV}" != "0" ] || [ "${IMAGE_LAYER_PERL_CPAN}" != "0" ] 
         autoconf=2.69-11 \
         automake=1:1.16.1-4 \
         build-essential=12.6 \
-        libavahi-compat-libdnssd-dev:amd64=0.7-4+b1 \
-        libdb-dev:amd64=5.3.1+nmu1 \
-        libsodium-dev:amd64=1.0.17-1 \
-        libssl-dev:amd64=1.1.1d-0+deb10u4 \
+        libavahi-compat-libdnssd-dev=0.7-4+b1 \
+        libdb-dev=5.3.1+nmu1 \
+        libsodium-dev=1.0.17-1 \
+        libssl-dev4=1.1.1d-0+deb10u4 \
         libtool=2.4.6-9 \
-        libusb-1.0-0-dev:amd64=2:1.0.22-2 \
+        libusb-1.0-0-dev=2:1.0.22-2 \
         patch=2.7.6-3+deb10u1 \
       && LC_ALL=C apt-get autoremove -qqy && LC_ALL=C apt-get clean \
       && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.[^.] ~/.??* ~/* \
