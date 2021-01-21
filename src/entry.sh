@@ -258,7 +258,7 @@ if [ -z "${PIDFILE}" ]; then
     PIDFILE="${FHEM_DIR}/./log/fhem.pid"
   elif [ -s ${FHEM_DIR}/${CONFIGTYPE} ]; then
     GPIDFILE=$(cat ${FHEM_DIR}/${CONFIGTYPE} | grep -P '^attr global pidfilename' | cut -d ' ' -f 4)
-    PIDFILE="${FHEM_DIR}/${GPIDFILE:-./log/fhem.pid}"
+    [ "$GPIDFILE" != "${GPIDFILE#/}" ] && PIDFILE="${GPIDFILE}" ||  PIDFILE="${FHEM_DIR}/${GPIDFILE:-./log/fhem.pid}"
   else
     PIDFILE="${FHEM_DIR}/./log/fhem.pid"
   fi
