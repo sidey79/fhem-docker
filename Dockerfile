@@ -1,6 +1,6 @@
 #ARG BASE_IMAGE="debian"
 #ARG BASE_IMAGE_TAG="buster-20210408-slim"
-FROM --platform=$TARGETPLATFORM debian:buster-20210408-slim
+FROM --platform=$TARGETPLATFORM debian:buster-20210621-slim
 
 ARG TARGETPLATFORM
 
